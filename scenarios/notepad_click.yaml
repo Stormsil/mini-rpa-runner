@@ -1,0 +1,32 @@
+version: 1
+
+steps:
+  - name: Open Notepad
+    action: run_program
+    path: "C:/Windows/System32/notepad.exe"
+    announce: "Открываю Блокнот…"
+
+  - name: Wait window
+    action: wait_window
+    title: '/(?:Notepad|Блокнот)\s*$/'
+    class: '/^Notepad$/i'
+    timeout: 10s
+    announce: "Жду окно Блокнота…"
+
+  - name: Focus window
+    action: window_focus
+    title: '/(?:Notepad|Блокнот)\s*$/'
+    class: '/^Notepad$/i'
+
+  - name: Click menu 'File/Файл'
+    action: click_image
+    image: "@scenario/menu_file.png"
+    region: window
+    delay_before: 200ms
+    debug: { show_score: true, save_best: true }
+    move_duration: 150ms
+    success: "Кликнул по меню — должно раскрыться."
+
+  - name: Close menu with ESC
+    action: press_key
+    key: esc

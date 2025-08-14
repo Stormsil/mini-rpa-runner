@@ -203,10 +203,61 @@
           "then": {
             "required": ["text"],
             "properties": {
+              "backend": { "enum": ["auto","pyautogui","win_unicode","clipboard"] },
               "text": { "type": "string" },
-              "per_char_delay": { "$ref": "#/$defs/duration" }
+              "per_char_delay": { "$ref": "#/$defs/duration" },
+              "humanize": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                  "start_pause_ms": {
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0 },
+                    "minItems": 2, "maxItems": 2
+                  },
+                  "speed_cps": {
+                    "anyOf": [
+                      { "type": "number", "minimum": 1 },
+                      {
+                        "type": "array",
+                        "items": { "type": "number", "minimum": 1 },
+                        "minItems": 2, "maxItems": 2
+                      }
+                    ]
+                  },
+                  "jitter_ms": {
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0 },
+                    "minItems": 2, "maxItems": 2
+                  },
+                  "word_pause_ms": {
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0 },
+                    "minItems": 2, "maxItems": 2
+                  },
+                  "punct_pause_ms": {
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0 },
+                    "minItems": 2, "maxItems": 2
+                  },
+                  "newline_pause_ms": {
+                    "type": "array",
+                    "items": { "type": "number", "minimum": 0 },
+                    "minItems": 2, "maxItems": 2
+                  },
+                  "mistakes": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "properties": {
+                      "prob": { "type": "number", "minimum": 0, "maximum": 1 },
+                      "fix_with_backspace": { "type": "boolean" },
+                      "charset": { "type": "string" }
+                    }
+                  }
+                }
+              }
             }
-          }
+            }
         },
         {
           "if": { "properties": { "action": { "const": "press_key" } } },

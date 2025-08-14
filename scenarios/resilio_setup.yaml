@@ -1,0 +1,9 @@
+version: 1
+settings:
+  defaults: { timeout: 20s, retries: 2, retry_delay: 400ms }
+  vars:
+    resilio_exe: "C:/Program Files/Resilio Sync/Resilio Sync.exe"
+steps:
+  - name: Open Resilio
+    action: run_program
+    path: "{{ resilio_exe }}"

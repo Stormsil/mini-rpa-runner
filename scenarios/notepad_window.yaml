@@ -7,8 +7,16 @@ steps:
   - name: Wait Notepad Window
     action: wait_window
     title: /Notepad|Блокнот/i
-    timeout: 10s
+    timeout: 5s
 
   - name: Focus Notepad
     action: window_focus
     title: /Notepad|Блокнот/i
+
+  - name: Say hello in log
+    action: log
+    message: "Готово, окно в фокусе."
+
+  - name: Small pause
+    action: sleep
+    duration: 1s

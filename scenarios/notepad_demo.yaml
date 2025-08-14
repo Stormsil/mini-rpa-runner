@@ -1,0 +1,9 @@
+version: 1
+steps:
+  - name: Open Notepad
+    action: run_program
+    path: "C:/Windows/System32/notepad.exe"
+
+  - name: Echo via PowerShell
+    action: run_ps
+    inline: 'Write-Host "Hello from PS"'

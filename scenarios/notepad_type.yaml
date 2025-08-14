@@ -1,0 +1,35 @@
+version: 1
+steps:
+  - name: Open Notepad
+    action: run_program
+    path: "C:/Windows/System32/notepad.exe"
+    announce: "Открываю Блокнот…"
+
+  - name: Wait window
+    action: wait_window
+    title: /Notepad|Блокнот/i
+    timeout: 10s
+    announce: "Жду окно Блокнота…"
+
+  - name: Focus
+    action: window_focus
+    title: /Notepad|Блокнот/i
+
+  - name: Type greeting
+    action: type_text
+    text: "Привет! Это автотест.\nСледующая строка появится через паузу…"
+    per_char_delay: 20ms
+    success: "Текст введён."
+
+  - name: Pause a bit
+    action: sleep
+    duration: 800ms
+
+  - name: New line
+    action: press_key
+    key: enter
+
+  - name: Save hotkey
+    action: press_key
+    hotkey: ["ctrl","s"]
+    announce: "Жму Ctrl+S… (диалог сохранения может всплыть)"

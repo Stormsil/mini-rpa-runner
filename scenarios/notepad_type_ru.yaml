@@ -1,0 +1,20 @@
+version: 1
+steps:
+  - name: Open Notepad
+    action: run_program
+    path: "C:/Windows/System32/notepad.exe"
+
+  - name: Wait
+    action: wait_window
+    title: /Notepad|Блокнот/i
+    timeout: 10s
+
+  - name: Focus
+    action: window_focus
+    title: /Notepad|Блокнот/i
+
+  - name: Type RU text (human)
+    action: type_text
+    backend: auto         # auto → win_unicode для не-ASCII на Windows
+    humanize: {}          # дефолтные «человечные» паузы
+    text: "Привет! Это тест «человечного» ввода.\nНовая строка, всё ок?"

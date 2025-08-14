@@ -2,3 +2,8 @@ pyyaml
 rich
 jinja2
 pygetwindow
+pyautogui
+pyperclip
+mss
+opencv-python
+pillow

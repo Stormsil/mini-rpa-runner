@@ -1,0 +1,26 @@
+vision:
+  threshold: 0.85
+  scale_range: [0.98, 1.02]
+  retries: 12
+  retry_delay: 120ms
+  default_region: window
+  matcher: auto
+  clahe: true
+  edge:
+    canny: [80, 180]
+input:
+  humanize_defaults:
+    speed_cps: [5, 8]
+    jitter_ms: [30, 90]
+    word_pause_ms: [120, 240]
+    punct_pause_ms: [180, 320]
+    newline_pause_ms: [220, 420]
+    start_pause_ms: [150, 350]
+window:
+  focus_timeout: 10s
+run:
+  timeout: 20s
+  delay_between_steps: 200ms
+paths:
+  assets: "images"
+

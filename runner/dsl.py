@@ -8,6 +8,7 @@ import re
 
 import yaml
 from jinja2 import Environment, StrictUndefined
+from .utils.paths import ensure_paths_in_config
 
 
 # ---------- базовые utils ----------
@@ -187,6 +188,6 @@ def load_config(
     if overrides:
         result = _deep_merge(result, parse_overrides(overrides))
 
-    # рендер Jinja2-плейсхолдеров после мерджа
+    ensure_paths_in_config(result, project_root, scenario_p, profile)
     result = _render_templates(result)
     return result
