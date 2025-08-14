@@ -1,0 +1,4 @@
+pyyaml
+rich
+jinja2
+pygetwindow

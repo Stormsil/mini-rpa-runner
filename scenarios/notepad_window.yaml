@@ -1,0 +1,14 @@
+version: 1
+steps:
+  - name: Open Notepad
+    action: run_program
+    path: "C:/Windows/System32/notepad.exe"
+
+  - name: Wait Notepad Window
+    action: wait_window
+    title: /Notepad|Блокнот/i
+    timeout: 10s
+
+  - name: Focus Notepad
+    action: window_focus
+    title: /Notepad|Блокнот/i
