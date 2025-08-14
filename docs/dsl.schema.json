@@ -1,0 +1,297 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mini-RPA DSL",
+  "type": "object",
+  "required": ["version", "steps"],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "defaults": { "$ref": "#/$defs/defaults" },
+        "vars": {
+          "type": "object",
+          "additionalProperties": {
+            "type": ["string", "number", "boolean"]
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/step" }
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "duration": {
+      "anyOf": [
+        { "type": "number" },
+        { "type": "string", "pattern": "^\\d+(ms|s|m)$" }
+      ],
+      "description": "Напр.: 400ms, 2s, 1m или число секунд"
+    },
+
+    "scaleRange": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+
+    "region": {
+      "anyOf": [
+        { "enum": ["screen", "window"] },
+        {
+          "type": "object",
+          "required": ["left", "top", "width", "height"],
+          "properties": {
+            "left": { "type": "integer" },
+            "top": { "type": "integer" },
+            "width": { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "timeout": { "$ref": "#/$defs/duration" },
+        "retries": { "type": "integer", "minimum": 0 },
+        "retry_delay": { "$ref": "#/$defs/duration" }
+      },
+      "additionalProperties": true
+    },
+
+    "condition": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "image_exists" } } },
+          "then": {
+            "required": ["image"],
+            "properties": {
+              "image": { "type": "string" },
+              "region": { "$ref": "#/$defs/region" },
+              "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+              "scale_range": { "$ref": "#/$defs/scaleRange" },
+              "timeout": { "$ref": "#/$defs/duration" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "window_exists" } } },
+          "then": {
+            "required": ["title"],
+            "properties": {
+              "title": { "type": "string" },
+              "class": { "type": "string" },
+              "timeout": { "$ref": "#/$defs/duration" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "file_exists" } } },
+          "then": {
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string" },
+              "timeout": { "$ref": "#/$defs/duration" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "process_exists" } } },
+          "then": {
+            "oneOf": [
+              { "required": ["name"] },
+              { "required": ["pid"] }
+            ],
+            "properties": {
+              "name": { "type": "string" },
+              "pid": { "type": "integer", "minimum": 1 },
+              "timeout": { "$ref": "#/$defs/duration" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+
+    "step": {
+      "type": "object",
+      "required": ["name", "action"],
+      "properties": {
+        "name": { "type": "string" },
+        "action": { "type": "string" },
+        "timeout": { "$ref": "#/$defs/duration" },
+        "retries": { "type": "integer", "minimum": 0 },
+        "retry_delay": { "$ref": "#/$defs/duration" },
+        "screenshot_on_fail": { "type": "boolean" },
+        "announce": { "type": "string" },
+        "success": { "type": "string" },
+        "fail": { "type": "string" },
+        "delay_before": { "$ref": "#/$defs/duration" },
+        "delay_after":  { "$ref": "#/$defs/duration" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "action": { "const": "run_ps" } } },
+          "then": {
+            "oneOf": [
+              { "required": ["script"] },
+              { "required": ["inline"] }
+            ],
+            "properties": {
+              "script": { "type": "string" },
+              "inline": { "type": "string" },
+              "args": {
+                "type": "array",
+                "items": { "type": ["string", "number", "boolean"] }
+              },
+              "expect_code": { "type": "integer" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "run_program" } } },
+          "then": {
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string" },
+              "args": {
+                "type": "array",
+                "items": { "type": ["string", "number", "boolean"] }
+              },
+              "cwd": { "type": "string" },
+              "wait": { "type": "boolean" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "wait_window" } } },
+          "then": {
+            "required": ["title"],
+            "properties": {
+              "title": { "type": "string" },
+              "class": { "type": "string" },
+              "exists": { "type": "boolean" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "window_focus" } } },
+          "then": {
+            "required": ["title"],
+            "properties": {
+              "title": { "type": "string" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "type_text" } } },
+          "then": {
+            "required": ["text"],
+            "properties": {
+              "text": { "type": "string" },
+              "per_char_delay": { "$ref": "#/$defs/duration" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "press_key" } } },
+          "then": {
+            "oneOf": [
+              { "required": ["key"] },
+              { "required": ["hotkey"] }
+            ],
+            "properties": {
+              "key": { "type": "string" },
+              "hotkey": {
+                "type": "array",
+                "minItems": 2,
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "click_image" } } },
+          "then": {
+            "required": ["image"],
+            "properties": {
+              "image": { "type": "string" },
+              "region": { "$ref": "#/$defs/region" },
+              "threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+              "scale_range": { "$ref": "#/$defs/scaleRange" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "wait_file" } } },
+          "then": {
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string" },
+              "exists": { "type": "boolean" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "wait_process" } } },
+          "then": {
+            "oneOf": [
+              { "required": ["name"] },
+              { "required": ["pid"] }
+            ],
+            "properties": {
+              "name": { "type": "string" },
+              "pid": { "type": "integer", "minimum": 1 },
+              "exists": { "type": "boolean" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "log" } } },
+          "then": {
+            "required": ["message"],
+            "properties": { "message": { "type": "string" } }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "pause" } } },
+          "then": { "properties": {} }
+        },
+        {
+          "if": { "properties": { "action": { "const": "checkpoint" } } },
+          "then": {
+            "required": ["id"],
+            "properties": { "id": { "type": "string" } }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "if_condition" } } },
+          "then": {
+            "required": ["condition", "then"],
+            "properties": {
+              "condition": { "$ref": "#/$defs/condition" },
+              "then": { "type": "array", "items": { "$ref": "#/$defs/step" } },
+              "else": { "type": "array", "items": { "$ref": "#/$defs/step" } }
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    }
+  }
+}

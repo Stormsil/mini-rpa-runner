@@ -1,0 +1,25 @@
+version: 1
+settings:
+  vars:
+    # поправь путь под свою редакцию/год:
+    vs_exe: "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/devenv.exe"
+
+steps:
+  - name: Open Visual Studio
+    action: run_program
+    path: "{{ vs_exe }}"
+    announce: "Запускаю Visual Studio…"
+    # маленькая пауза, если хочешь увидеть «ступеньку»
+    delay_after: 300ms
+
+  - name: Wait for VS window
+    action: wait_window
+    title: /Microsoft Visual Studio/i
+    timeout: 60s
+    announce: "Жду окно VS (до 60с)…"
+    success: "Окно VS появилось."
+
+  - name: Focus VS
+    action: window_focus
+    title: /Microsoft Visual Studio/i
+    success: "Фокус на VS."
